@@ -25,6 +25,12 @@ type ProductJSON struct {
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
 }
+
+type ProductDescTotalJSON struct {
+	Description string `json:"description"`
+	Total       int    `json:"total"`
+}
+
 // GetAll returns all products
 func (h *ProductsDefault) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -60,6 +66,7 @@ type RequestBodyProduct struct {
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
 }
+
 // Create creates a new product
 func (h *ProductsDefault) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -97,6 +104,33 @@ func (h *ProductsDefault) Create() http.HandlerFunc {
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"message": "product created",
 			"data":    pr,
+		})
+	}
+}
+
+func (h *ProductsDefault) GetTopFiveProducts() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		p, err := h.sv.GetTopFiveProducts()
+		if err != nil {
+			switch err {
+			default:
+				response.Error(w, http.StatusInternalServerError, "error getting top five products")
+				return
+			}
+		}
+
+		// response
+		// - serialize
+		var pJSON []ProductDescTotalJSON
+
+		for _, v := range p {
+			pJSON = append(pJSON, ProductDescTotalJSON{
+				Description: v.Description,
+				Total:       v.Total,
+			})
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": pJSON,
 		})
 	}
 }

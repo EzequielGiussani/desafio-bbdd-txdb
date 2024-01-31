@@ -15,11 +15,11 @@ func main() {
 	// - config
 	cfg := &application.ConfigApplicationDefault{
 		Db: &mysql.Config{
-			User:                 "root",
-			Passwd:               "",
-			Net:                  "tcp",
-			Addr:                 "localhost:3306",
-			DBName:               "fantasy_products",
+			User:   "root",
+			Passwd: "root",
+			Net:    "tcp",
+			Addr:   "localhost:3306",
+			DBName: "fantasy_products",
 		},
 		Addr: "127.0.0.1:8080",
 	}

@@ -64,7 +64,64 @@ func (r *CustomersMySQL) Save(c *internal.Customer) (err error) {
 
 	// set the id
 	(*c).Id = int(id)
-	
+
 	return
 }
 
+func (r *CustomersMySQL) GetTotalAmountInEachCondition() (ccTotal []internal.CcTotal, err error) {
+	rows, err := r.db.Query("select c.`condition` , ROUND(sum(i.total), 2) from customers c inner join invoices i on i.customer_id = c.id group by c.`condition` ")
+
+	if err != nil {
+		return []internal.CcTotal{}, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var ccTot internal.CcTotal
+		var condition int
+		err = rows.Scan(&condition, &ccTot.Total)
+
+		if condition == 1 {
+			ccTot.Condition = "Activo"
+		} else {
+			ccTot.Condition = "Inactivo"
+		}
+
+		ccTotal = append(ccTotal, ccTot)
+	}
+
+	err = rows.Err()
+
+	if err != nil {
+		return []internal.CcTotal{}, err
+	}
+
+	return
+
+}
+
+func (r *CustomersMySQL) GetTopFiveActiveCustomers() (customers []internal.CustomerNameAmount, err error) {
+	rows, err := r.db.Query("select c.first_name, c.last_name, ROUND(SUM(i.total), 2) as total from customers c inner join invoices i on c.id = i.customer_id where c.`condition` = 1 group by c.id order by total desc limit 5")
+
+	if err != nil {
+		return []internal.CustomerNameAmount{}, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var customer internal.CustomerNameAmount
+		err = rows.Scan(&customer.FirstName, &customer.LastName, &customer.Amount)
+
+		customers = append(customers, customer)
+	}
+
+	err = rows.Err()
+
+	if err != nil {
+		return []internal.CustomerNameAmount{}, err
+	}
+
+	return
+}

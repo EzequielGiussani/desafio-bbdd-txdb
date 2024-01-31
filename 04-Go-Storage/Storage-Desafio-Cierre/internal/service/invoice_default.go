@@ -24,3 +24,12 @@ func (s *InvoicesDefault) Save(i *internal.Invoice) (err error) {
 	err = s.rp.Save(i)
 	return
 }
+
+func (s *InvoicesDefault) UpdateTotal() (err error) {
+
+	if err = s.rp.UpdateTotal(); err != nil {
+		return internal.ServiceInvoiceInternalServerError
+	}
+
+	return
+}

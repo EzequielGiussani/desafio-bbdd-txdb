@@ -6,4 +6,10 @@ type RepositoryProduct interface {
 	FindAll() (p []Product, err error)
 	// Save saves a product into the database.
 	Save(p *Product) (err error)
+	GetTopFiveProducts() (p []ProductDescTotal, err error)
+}
+
+type ProductDescTotal struct {
+	Description string
+	Total       int
 }

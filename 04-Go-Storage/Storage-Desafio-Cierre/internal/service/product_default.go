@@ -24,3 +24,11 @@ func (s *ProductsDefault) Save(p *internal.Product) (err error) {
 	err = s.rp.Save(p)
 	return
 }
+
+func (s *ProductsDefault) GetTopFiveProducts() (p []internal.ProductDescTotal, err error) {
+	p, err = s.rp.GetTopFiveProducts()
+	if err != nil {
+		return nil, err
+	}
+	return
+}

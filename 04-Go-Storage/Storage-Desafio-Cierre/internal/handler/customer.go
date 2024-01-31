@@ -27,6 +27,18 @@ type CustomerJSON struct {
 	LastName  string `json:"last_name"`
 	Condition int    `json:"condition"`
 }
+
+type ccTotalJSON struct {
+	Condition string  `json:"condition"`
+	Total     float64 `json:"total"`
+}
+
+type CustomerNameAmountJSON struct {
+	FirstName string  `json:"first_name"`
+	LastName  string  `json:"last_name"`
+	Amount    float64 `json:"amount"`
+}
+
 // GetAll returns all customers
 func (h *CustomersDefault) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +77,7 @@ type RequestBodyCustomer struct {
 	LastName  string `json:"last_name"`
 	Condition int    `json:"condition"`
 }
+
 // Create creates a new customer
 func (h *CustomersDefault) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -104,6 +117,61 @@ func (h *CustomersDefault) Create() http.HandlerFunc {
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"message": "customer created",
 			"data":    cs,
+		})
+	}
+}
+
+func (h *CustomersDefault) GetTotalAmountInEachCondition() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		ccTotal, err := h.sv.GetTotalAmountInEachCondition()
+		if err != nil {
+			switch err {
+			default:
+				response.Error(w, http.StatusInternalServerError, "error getting total amount in each condition")
+				return
+			}
+		}
+
+		var totals []ccTotalJSON
+
+		for _, cc := range ccTotal {
+			totals = append(totals, ccTotalJSON{
+				Condition: cc.Condition,
+				Total:     cc.Total,
+			})
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": totals,
+		})
+	}
+}
+
+func (h *CustomersDefault) GetTopFiveActiveCustomers() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		customers, err := h.sv.GetTopFiveActiveCustomers()
+		if err != nil {
+			switch err {
+			default:
+				response.Error(w, http.StatusInternalServerError, "error getting top five active customers")
+				return
+			}
+		}
+
+		var customerNameAmountJSON []CustomerNameAmountJSON
+
+		for _, c := range customers {
+			customerNameAmountJSON = append(customerNameAmountJSON, CustomerNameAmountJSON{
+				FirstName: c.FirstName,
+				LastName:  c.LastName,
+				Amount:    c.Amount,
+			})
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": customerNameAmountJSON,
 		})
 	}
 }

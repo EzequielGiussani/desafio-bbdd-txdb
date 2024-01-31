@@ -1,9 +1,9 @@
 -- DDL
-DROP DATABASE IF EXISTS `fantasy_products`;
+DROP DATABASE IF EXISTS `test_db_fantasy_products`;
 
-CREATE DATABASE `fantasy_products`;
+CREATE DATABASE `test_db_fantasy_products`;
 
-USE `fantasy_products`;
+USE `test_db_fantasy_products`;
 
 -- Table structure for table `customers`
 CREATE TABLE `customers` (

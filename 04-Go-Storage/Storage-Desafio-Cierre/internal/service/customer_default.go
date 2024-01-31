@@ -24,3 +24,25 @@ func (s *CustomersDefault) Save(c *internal.Customer) (err error) {
 	err = s.rp.Save(c)
 	return
 }
+
+func (s *CustomersDefault) GetTotalAmountInEachCondition() (ccTotal []internal.CcTotal, err error) {
+	ccTotal, err = s.rp.GetTotalAmountInEachCondition()
+	if err != nil {
+		switch err {
+		default:
+			return nil, internal.ServiceCustomerInternalServerError
+		}
+	}
+	return
+}
+
+func (s *CustomersDefault) GetTopFiveActiveCustomers() (customers []internal.CustomerNameAmount, err error) {
+	customers, err = s.rp.GetTopFiveActiveCustomers()
+	if err != nil {
+		switch err {
+		default:
+			return nil, internal.ServiceCustomerInternalServerError
+		}
+	}
+	return
+}
